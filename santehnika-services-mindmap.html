@@ -1,0 +1,398 @@
+<title>Сантехника — mind map</title>
+<style>
+  :root {
+    --bg: #F6F4EE;
+    --surface: #FFFFFF;
+    --ink: #23282B;
+    --muted: #5B6B73;
+    --faint: #8B968C;
+    --accent: #2B6E7E;
+    --accent-ink: #163E48;
+    --accent-tint: #E3EEEF;
+    --line: #DDDACF;
+    --line-strong: #C7C3B5;
+    --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    --serif: Georgia, "Noto Serif", "Times New Roman", serif;
+
+    --r-purple:#534AB7; --r-teal:#0F6E56; --r-coral:#993C1D; --r-pink:#993556;
+    --r-blue:#185FA5;   --r-green:#3B6D11; --r-amber:#854F0B; --r-gray:#5F5E5A;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14181A; --surface: #1B2023; --ink: #E8E5DD;
+      --muted: #9AA6A9; --faint: #63706B; --accent: #5CB4C4; --accent-ink: #CFEEF3;
+      --accent-tint: #223338; --line: #2C3336; --line-strong: #3A4245;
+      --r-purple:#AFA9EC; --r-teal:#5DCAA5; --r-coral:#F0997B; --r-pink:#ED93B1;
+      --r-blue:#85B7EB;   --r-green:#97C459; --r-amber:#EF9F27; --r-gray:#B4B2A9;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14181A; --surface: #1B2023; --ink: #E8E5DD;
+    --muted: #9AA6A9; --faint: #63706B; --accent: #5CB4C4; --accent-ink: #CFEEF3;
+    --accent-tint: #223338; --line: #2C3336; --line-strong: #3A4245;
+    --r-purple:#AFA9EC; --r-teal:#5DCAA5; --r-coral:#F0997B; --r-pink:#ED93B1;
+    --r-blue:#85B7EB;   --r-green:#97C459; --r-amber:#EF9F27; --r-gray:#B4B2A9;
+  }
+  :root[data-theme="light"] {
+    --bg: #F6F4EE; --surface: #FFFFFF; --ink: #23282B;
+    --muted: #5B6B73; --faint: #8B968C; --accent: #2B6E7E; --accent-ink: #163E48;
+    --accent-tint: #E3EEEF; --line: #DDDACF; --line-strong: #C7C3B5;
+    --r-purple:#534AB7; --r-teal:#0F6E56; --r-coral:#993C1D; --r-pink:#993556;
+    --r-blue:#185FA5;   --r-green:#3B6D11; --r-amber:#854F0B; --r-gray:#5F5E5A;
+  }
+
+  * { box-sizing: border-box; }
+  body, .root { color: var(--ink); font-family: var(--sans); }
+  .root { background: var(--bg); padding: 2rem 1.25rem 2.5rem; }
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+  }
+
+  header.page {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    gap: 1rem; margin-bottom: 1.2rem; flex-wrap: wrap; max-width: 1040px;
+    margin-left: auto; margin-right: auto;
+  }
+  .title-block h1 {
+    font-family: var(--serif); font-size: 26px; font-weight: 400;
+    margin: 0 0 0.15rem; text-wrap: balance;
+  }
+  .title-block .meta { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+
+  .controls { display: flex; gap: 0.5rem; }
+  .btn {
+    font-family: var(--sans); font-size: 12.5px; color: var(--muted);
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 999px; padding: 0.4rem 0.85rem; cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .btn:hover { border-color: var(--line-strong); color: var(--ink); }
+  .btn:focus-visible, input:focus-visible, .branch:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px;
+  }
+
+  .search-row {
+    max-width: 1040px; margin: 0 auto 1rem; position: relative;
+  }
+  .search-row input {
+    width: 100%; font-family: var(--sans); font-size: 14px; color: var(--ink);
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+    padding: 0.65rem 0.9rem 0.65rem 2.2rem;
+  }
+  .search-row input::placeholder { color: var(--faint); }
+  .search-row .icon {
+    position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%);
+    width: 14px; height: 14px; color: var(--faint); pointer-events: none;
+  }
+  .search-row .count-live {
+    font-family: var(--mono); font-size: 11.5px; color: var(--faint);
+    margin-top: 0.35rem; min-height: 1.2em;
+  }
+
+  .canvas-scroll {
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+  .mm {
+    position: relative;
+    width: 1500px;
+    margin: 0 auto;
+  }
+  .mm svg { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; }
+  .mm svg path { fill: none; opacity: 0.75; }
+
+  .center-node {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    background: var(--surface);
+    border: 1.5px solid var(--accent);
+    color: var(--ink);
+    border-radius: 999px;
+    padding: 0.7rem 1.4rem;
+    font-family: var(--serif);
+    font-size: 17px;
+    white-space: nowrap;
+  }
+
+  .branch {
+    position: absolute;
+    transform: translate(0, -50%);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--sans);
+    padding: 0.2rem 0;
+    max-width: 300px;
+  }
+  .branch.side-left { flex-direction: row-reverse; right: 0; text-align: right; }
+  .branch.side-right { left: 0; text-align: left; }
+  .branch .name { font-size: 14px; font-weight: 500; color: var(--bc, var(--ink)); white-space: nowrap; }
+  .branch .badge {
+    font-family: var(--mono); font-size: 10.5px; color: var(--bc, var(--muted));
+    border: 1px solid currentColor; border-radius: 999px; padding: 0.05rem 0.4rem;
+    opacity: 0.75; flex: none;
+  }
+  .branch .chev {
+    width: 7px; height: 7px; flex: none;
+    border-right: 1.4px solid var(--bc, var(--faint));
+    border-bottom: 1.4px solid var(--bc, var(--faint));
+    transform: rotate(45deg); transition: transform 0.15s ease;
+  }
+  .branch.open .chev { transform: rotate(-135deg); }
+
+  .leaf {
+    position: absolute;
+    transform: translate(0, -50%);
+    width: 300px;
+    font-size: 12.5px;
+    line-height: 1.35;
+    color: var(--muted);
+  }
+  .leaf.side-left { right: 0; text-align: right; }
+  .leaf.side-right { left: 0; text-align: left; }
+  .leaf mark { background: var(--accent-tint); color: var(--accent-ink); border-radius: 3px; padding: 0 2px; }
+
+  .empty-state {
+    font-family: var(--mono); font-size: 13px; color: var(--faint);
+    text-align: center; padding: 2rem 0;
+  }
+  .empty-state[hidden] { display: none; }
+</style>
+
+<div class="root">
+  <h2 class="sr-only">Радиальная mind map: центральный узел «Сантехника», от него отходят 14 категорий, каждая раскрывается в список своих услуг — всего 116 услуг.</h2>
+
+  <header class="page">
+    <div class="title-block">
+      <h1>Сантехника</h1>
+      <div class="meta">14 категорий · 116 услуг</div>
+    </div>
+    <div class="controls">
+      <button class="btn" id="expandAll" type="button">Развернуть всё</button>
+      <button class="btn" id="collapseAll" type="button">Свернуть всё</button>
+    </div>
+  </header>
+
+  <div class="search-row">
+    <svg class="icon" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.4"/><line x1="13.6" y1="13.6" x2="18" y2="18" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+    <input id="search" type="text" placeholder="Поиск по категориям и услугам…" autocomplete="off">
+    <div class="count-live" id="countLive"></div>
+  </div>
+
+  <div class="canvas-scroll">
+    <div class="mm" id="mm">
+      <svg id="lines"></svg>
+      <div class="center-node" id="centerNode">Сантехника</div>
+    </div>
+  </div>
+  <div class="empty-state" id="emptyState" hidden>Ничего не найдено по запросу</div>
+</div>
+
+<script>
+const DATA = [
+ {"name":"Аварийные работы","items":["Устранение засоров","Устранение сильных засоров","Устранить протечку"]},
+ {"name":"Биде","items":["Демонтаж биде","Установка биде","Установка гигиенического душа"]},
+ {"name":"Ванна","items":["Гидроизоляция швов ванны","Демонтаж ванны","Демонтаж джакузи","Ремонт джакузи","Реставрация ванн","Установить водонагреватель","Установка ванны","Установка джакузи"]},
+ {"name":"Душевая кабина","items":["Герметизация душевой кабины","Демонтаж душевой кабины","Замена ванны на душевую кабину","Монтаж душевой стойки","Ремонт душевой кабины","Ремонт душевых стоек","Установка акриловых поддонов","Установка дверок душевой кабины","Установка душевого трапа","Установка душевого уголка","Установка душевой кабины","Установка душевой кабины с гидромассажем","Установка душевой панели","Установка душевой штанги"]},
+ {"name":"Консультация по сантехнике","items":["Консультация сантехника"]},
+ {"name":"Кухонная мойка","items":["Установить смеситель на кухне","Установка измельчителя пищевых отходов","Установка мойки"]},
+ {"name":"Отопление","items":["Демонтаж полотенцесушителя","Демонтаж теплого пола","Демонтаж чугунного радиатора отопления","Замена котла отопления в частном доме","Замена полотенцесушителя","Замена радиаторов отопления","Замена стояков отопления","Замена труб отопления","Монтаж коллектора отопления","Монтаж отопления под ключ","Монтаж радиаторов отопления","Опрессовка системы отопления","Перенос стояка водоснабжения","Перенос стояка отопления","Покраска радиаторов отопления","Разморозка труб","Ремонт батареи отопления","Ремонт водонагревателя","Ремонт водяного тёплого пола","Ремонт кабеля теплого пола","Ремонт стояка полотенцесушителя","Ремонт труб отопления","Установка кранов на батареи отопления","Установка полотенцесушителя","Установка регулятора тёплого пола","Установка тёплых полов","Установка экранов на батареи","Установка электрокотла"]},
+ {"name":"Раковина","items":["Герметизация швов раковины","Демонтаж раковины","Демонтировать кран","Замена раковины","Замена сифона","Ремонт трещины раковины","Реставрация эмали раковин","Установка умывальника"]},
+ {"name":"Смеситель","items":["Демонтаж смесителя","Замена водонапорного крана","Замена гибкой подводки","Замена эксцентриков смесителя","Заменить смеситель","Ремонт смесителя","Ремонт смесителя с термостатом","Установка смесителя"]},
+ {"name":"Счетчик","items":["Замена счётчика воды","Ремонт счётчика воды"]},
+ {"name":"Счётчик для воды","items":["Демонтаж счётчиков воды","Установить счётчик воды"]},
+ {"name":"Трубы","items":["Врезка в трубу водопровода","Демонтаж труб водоснабжения","Демонтаж шаровых кранов","Замена редуктора давления воды","Замена стояка","Замена труб водоснабжения","Замена шаровых кранов","Монтаж водоснабжения","Монтаж труб","Пайка полипропиленовых труб","Разводка ХВС","Расчеканка труб","Ремонт труб","Снять заглушку с канализации","Установка гребёнки","Установка шарового крана","Штробление стен под трубы водоснабжения"]},
+ {"name":"Унитаз","items":["Демонтаж писсуара","Демонтаж унитаза","Замена арматуры в сливном бачке унитаза","Замена гофры на унитазе","Замена унитаза","Ремонт бачка унитаза","Ремонт инсталляции","Ремонт сололифта","Установить подвесной унитаз","Установить унитаз","Установка писсуара","Установка сололифта","Устранение засоров в унитазе","Чистка сололифта"]},
+ {"name":"Фильтры для воды","items":["Демонтаж фильтра для воды","Замена картриджа в фильтре","Обслуживание фильтров для воды","Ремонт крана фильтра для воды","Установка фильтров для воды"]}
+];
+
+const COLORS = ["purple","teal","coral","pink","blue","green","amber","gray"];
+DATA.forEach((c, i) => { c.color = COLORS[i % COLORS.length]; c.side = i % 2 === 0 ? "right" : "left"; });
+
+const mm = document.getElementById('mm');
+const linesSvg = document.getElementById('lines');
+const centerNode = document.getElementById('centerNode');
+const emptyState = document.getElementById('emptyState');
+const countLive = document.getElementById('countLive');
+
+const W = 1500;
+const CX = W / 2;
+const BRANCH_OFFSET = 165;
+const LEAF_OFFSET = 260;
+const SIDE_MARGIN = 60;
+const SLOT_GAP = 12;
+const LEAF_GAP = 6;
+const TOP_MARGIN = 60;
+
+let manualExpanded = new Set();
+let searchQuery = '';
+
+function escapeHtml(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+function highlight(text, q) {
+  if (!q) return escapeHtml(text);
+  const idx = text.toLowerCase().indexOf(q.toLowerCase());
+  if (idx === -1) return escapeHtml(text);
+  return escapeHtml(text.slice(0, idx)) + '<mark>' + escapeHtml(text.slice(idx, idx + q.length)) + '</mark>' + escapeHtml(text.slice(idx + q.length));
+}
+
+function curvePath(x1, y1, x2, y2, color, width) {
+  const dx = (x2 - x1) * 0.55;
+  const d = `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`;
+  return `<path d="${d}" stroke="${color}" stroke-width="${width}"/>`;
+}
+
+function buildSide(side, prepared, q) {
+  const list = prepared.filter(p => p.cat.side === side && p.visible);
+  const measured = [];
+
+  list.forEach(p => {
+    const branchEl = document.createElement('button');
+    branchEl.type = 'button';
+    branchEl.className = `branch side-${side}${p.expanded ? ' open' : ''}`;
+    branchEl.style.setProperty('--bc', `var(--r-${p.cat.color})`);
+    branchEl.setAttribute('aria-expanded', String(p.expanded));
+    branchEl.innerHTML = `<span class="chev" aria-hidden="true"></span><span class="name"></span><span class="badge">${p.items.length}</span>`;
+    branchEl.querySelector('.name').innerHTML = highlight(p.cat.name, q && p.nameMatches ? q : '');
+    branchEl.style.top = '0px';
+    branchEl.style.visibility = 'hidden';
+    mm.appendChild(branchEl);
+    branchEl.addEventListener('click', () => {
+      if (manualExpanded.has(p.cat.name)) manualExpanded.delete(p.cat.name);
+      else manualExpanded.add(p.cat.name);
+      render();
+    });
+
+    const leafEls = [];
+    if (p.expanded) {
+      p.items.forEach(text => {
+        const leafEl = document.createElement('div');
+        leafEl.className = `leaf side-${side}`;
+        leafEl.innerHTML = highlight(text, q);
+        leafEl.style.top = '0px';
+        leafEl.style.visibility = 'hidden';
+        mm.appendChild(leafEl);
+        leafEls.push(leafEl);
+      });
+    }
+
+    const branchH = branchEl.offsetHeight || 28;
+    const leafHeights = leafEls.map(el => el.offsetHeight || 20);
+    const leafBlockH = leafHeights.reduce((a, b) => a + b, 0) + LEAF_GAP * Math.max(0, leafHeights.length - 1);
+    const slotH = Math.max(branchH, leafBlockH);
+
+    measured.push({ p, branchEl, leafEls, leafHeights, branchH, leafBlockH, slotH, color: p.cat.color });
+  });
+
+  const totalHeight = measured.reduce((a, m) => a + m.slotH, 0) + SLOT_GAP * Math.max(0, measured.length - 1);
+  return { side, measured, totalHeight };
+}
+
+function positionSide(sideData, canvasH) {
+  const { side, measured, totalHeight } = sideData;
+  const sideStartY = Math.max(TOP_MARGIN, (canvasH - totalHeight) / 2);
+  const bx = side === 'right' ? CX + BRANCH_OFFSET : CX - BRANCH_OFFSET;
+  const lx = side === 'right' ? CX + BRANCH_OFFSET + LEAF_OFFSET : CX - BRANCH_OFFSET - LEAF_OFFSET;
+
+  let cursor = sideStartY;
+  measured.forEach(m => {
+    const slotCenterY = cursor + m.slotH / 2;
+    m.branchEl.style.left = side === 'right' ? bx + 'px' : '';
+    m.branchEl.style.right = side === 'left' ? (W - bx) + 'px' : '';
+    m.branchEl.style.top = slotCenterY + 'px';
+    m.branchEl.style.visibility = 'visible';
+    m.bx = bx; m.by = slotCenterY;
+
+    if (m.leafEls.length) {
+      let leafCursor = slotCenterY - m.leafBlockH / 2;
+      m.leafPositions = [];
+      m.leafEls.forEach((el, i) => {
+        const h = m.leafHeights[i];
+        const cy = leafCursor + h / 2;
+        el.style.left = side === 'right' ? lx + 'px' : '';
+        el.style.right = side === 'left' ? (W - lx) + 'px' : '';
+        el.style.top = cy + 'px';
+        el.style.visibility = 'visible';
+        m.leafPositions.push({ x: lx, y: cy });
+        leafCursor += h + LEAF_GAP;
+      });
+    }
+    cursor += m.slotH + SLOT_GAP;
+  });
+}
+
+function render() {
+  mm.querySelectorAll('.branch, .leaf').forEach(el => el.remove());
+  const q = searchQuery.trim().toLowerCase();
+
+  const prepared = DATA.map(cat => {
+    let items = cat.items;
+    let nameMatches = true;
+    let visible = true;
+    let expanded = manualExpanded.has(cat.name);
+    if (q) {
+      nameMatches = cat.name.toLowerCase().includes(q);
+      const filtered = nameMatches ? cat.items : cat.items.filter(t => t.toLowerCase().includes(q));
+      visible = filtered.length > 0;
+      items = filtered;
+      expanded = visible;
+    }
+    return { cat, items, visible, expanded, nameMatches };
+  });
+
+  let totalVisibleCats = 0, totalVisibleItems = 0;
+  if (q) prepared.forEach(p => { if (p.visible) { totalVisibleCats++; totalVisibleItems += p.items.length; } });
+  emptyState.hidden = !q || totalVisibleCats > 0;
+  countLive.textContent = q ? `Найдено: ${totalVisibleCats} категор${totalVisibleCats === 1 ? 'ия' : (totalVisibleCats < 5 ? 'ии' : 'ий')}, ${totalVisibleItems} услуг` : '';
+
+  const leftData = buildSide('left', prepared, q);
+  const rightData = buildSide('right', prepared, q);
+
+  const canvasH = Math.max(420, leftData.totalHeight + TOP_MARGIN * 2, rightData.totalHeight + TOP_MARGIN * 2);
+
+  positionSide(leftData, canvasH);
+  positionSide(rightData, canvasH);
+
+  mm.style.height = canvasH + 'px';
+  const centerY = canvasH / 2;
+  centerNode.style.left = CX + 'px';
+  centerNode.style.top = centerY + 'px';
+
+  const paths = [];
+  [leftData, rightData].forEach(sideData => {
+    sideData.measured.forEach(m => {
+      const colorVar = `var(--r-${m.color})`;
+      paths.push(curvePath(CX, centerY, m.bx, m.by, colorVar, 1.6));
+      if (m.leafPositions) {
+        m.leafPositions.forEach(lp => {
+          paths.push(curvePath(m.bx, m.by, lp.x, lp.y, colorVar, 1));
+        });
+      }
+    });
+  });
+
+  linesSvg.setAttribute('viewBox', `0 0 ${W} ${canvasH}`);
+  linesSvg.innerHTML = paths.join('');
+}
+
+document.getElementById('expandAll').addEventListener('click', () => {
+  manualExpanded = new Set(DATA.map(c => c.name));
+  render();
+});
+document.getElementById('collapseAll').addEventListener('click', () => {
+  manualExpanded = new Set();
+  render();
+});
+document.getElementById('search').addEventListener('input', (e) => {
+  searchQuery = e.target.value;
+  render();
+});
+
+render();
+</script>
