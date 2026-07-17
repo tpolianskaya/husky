@@ -376,7 +376,7 @@
       <div class="total-label">Сумма итого</div>
       <div class="total-value" id="total-value">0 ₽</div>
     </div>
-    <button class="primary-btn" id="cta-btn" disabled>Оформить заказ</button>
+    <button class="primary-btn" id="cta-btn" disabled>Заказать</button>
   </div>
 </div>
 
@@ -854,14 +854,14 @@
 
     if (!allAnswered) {
       progressLabelEl.textContent = `Вопрос ${answeredCount} из ${ordered.length + 2}`;
-      ctaBtn.textContent = 'Оформить заказ';
+      ctaBtn.textContent = 'Заказать';
       ctaBtn.disabled = true;
       return;
     }
 
     stepsEl.appendChild(renderSummary());
     progressLabelEl.textContent = 'Проверьте расчёт и оформите заказ';
-    ctaBtn.textContent = 'Оформить заказ';
+    ctaBtn.textContent = 'Заказать';
     ctaBtn.disabled = false;
   }
 
