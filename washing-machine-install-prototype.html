@@ -404,7 +404,11 @@
   const answers = {};
   let ordered = []; // set on each render
 
-  const contactInfo = { fio: '', phone: '', address: '' };
+  const contactInfo = {
+    fio: 'Полянская Татьяна',
+    phone: '+7 888 999 99 99',
+    address: 'Москва, Ленинский пр-т 34, кв. 16'
+  };
   const contactErrors = { fio: false, phone: false, address: false, type: false };
   let contactSubmitted = false;
   let orderPlaced = false;
