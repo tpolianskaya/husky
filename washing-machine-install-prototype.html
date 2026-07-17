@@ -401,7 +401,7 @@
     }
   };
 
-  const answers = {};
+  const answers = { type: 'freestanding' };
   let ordered = []; // set on each render
 
   const contactInfo = {
@@ -434,12 +434,13 @@
     let total = 0;
     const breakdown = [];
 
-    if (answers.type === 'freestanding') {
+    if (answers.type === 'freestanding' || answers.type === 'builtin') {
       total += 5000;
-      breakdown.push({ name: 'Установка отдельно стоящей стиральной машины', price: 5000 });
-    } else if (answers.type === 'builtin') {
-      total += 8000;
-      breakdown.push({ name: 'Установка встраиваемой стиральной машины', price: 8000 });
+      breakdown.push({ name: 'Установка стиральной машины', price: 5000 });
+    }
+    if (answers.type === 'builtin') {
+      total += 3000;
+      breakdown.push({ name: 'Доплата за встраиваемую машину', price: 3000 });
     }
 
     if (answers.demontage === 'yes') {
@@ -478,7 +479,7 @@
 
   function priceForStep(stepId, value) {
     switch (stepId) {
-      case 'type': return value === 'freestanding' ? 5000 : 8000;
+      case 'type': return value === 'freestanding' ? 5000 : 3000;
       case 'demontage': return value === 'yes' ? 1000 : (value === 'unknown' ? null : 0);
       case 'communications': return value === 'no' ? 2000 : (value === 'unknown' ? null : 0);
       case 'socket': return value === 'no' ? 1000 : (value === 'unknown' ? null : 0);
@@ -528,9 +529,10 @@
       priceEl.className = 'price pending';
       priceEl.textContent = 'уточним на месте';
     } else {
+      const isBasePrice = stepId === 'type' && answers[stepId] === 'freestanding';
       priceEl.className = 'price' + (price > 0 ? ' positive' : '');
       priceEl.textContent = price > 0
-        ? (stepId === 'type' ? `${price.toLocaleString('ru-RU')} ₽` : `+${price.toLocaleString('ru-RU')} ₽`)
+        ? (isBasePrice ? `${price.toLocaleString('ru-RU')} ₽` : `+${price.toLocaleString('ru-RU')} ₽`)
         : '0 ₽';
     }
 
@@ -662,7 +664,10 @@
       const btn = document.createElement('button');
       btn.className = 'option-btn' + (answers.type === opt.value ? ' selected' : '');
       const price = priceForStep('type', opt.value);
-      btn.innerHTML = `<span>${opt.label}</span><span class="hint">${price.toLocaleString('ru-RU')} ₽</span>`;
+      const priceLabel = opt.value === 'freestanding'
+        ? `${price.toLocaleString('ru-RU')} ₽`
+        : `+${price.toLocaleString('ru-RU')} ₽`;
+      btn.innerHTML = `<span>${opt.label}</span><span class="hint">${priceLabel}</span>`;
       btn.addEventListener('click', () => selectAnswer('type', opt.value));
       typeOpts.appendChild(btn);
     });
