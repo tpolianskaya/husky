@@ -568,7 +568,7 @@
     return card;
   }
 
-  function renderIntroStep() {
+  function renderContactCard() {
     const card = document.createElement('div');
     card.className = 'step-active';
 
@@ -607,17 +607,25 @@
       }
     });
 
-    const typeLabel = document.createElement('div');
-    typeLabel.className = 'sub-label';
-    typeLabel.textContent = 'Какая стиральная машина?';
-    card.appendChild(typeLabel);
+    return card;
+  }
+
+  function renderTypeCard() {
+    const card = document.createElement('div');
+    card.className = 'step-active';
+
+    const q = document.createElement('div');
+    q.className = 'q';
+    q.textContent = 'Какая стиральная машина?';
+    card.appendChild(q);
 
     const typeOpts = document.createElement('div');
     typeOpts.className = 'options';
     STEP_DEFS.type.options.forEach((opt) => {
       const btn = document.createElement('button');
       btn.className = 'option-btn' + (answers.type === opt.value ? ' selected' : '');
-      btn.innerHTML = `<span>${opt.label}</span>`;
+      const price = priceForStep('type', opt.value);
+      btn.innerHTML = `<span>${opt.label}</span><span class="hint">${price.toLocaleString('ru-RU')} ₽</span>`;
       btn.addEventListener('click', () => selectAnswer('type', opt.value));
       typeOpts.appendChild(btn);
     });
@@ -685,7 +693,8 @@
     totalValueEl.textContent = `${total.toLocaleString('ru-RU')} ₽`;
 
     if (!contactSubmitted) {
-      stepsEl.appendChild(renderIntroStep());
+      stepsEl.appendChild(renderContactCard());
+      stepsEl.appendChild(renderTypeCard());
       progressLabelEl.textContent = 'Укажите контакты и тип техники, чтобы начать расчёт';
       ctaBtn.textContent = 'Продолжить';
       ctaBtn.disabled = false;
