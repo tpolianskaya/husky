@@ -90,9 +90,12 @@
     padding: 12px 14px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: 10px;
     animation: fadeIn .25s ease;
+  }
+  .step-resolved .text-wrap {
+    flex: 1;
+    min-width: 0;
   }
   .step-resolved .q {
     font-size: 14px;
@@ -489,6 +492,7 @@
     row.className = 'step-resolved';
 
     const textWrap = document.createElement('div');
+    textWrap.className = 'text-wrap';
     const q = document.createElement('div');
     q.className = 'q';
     q.textContent = def.question;
@@ -649,6 +653,7 @@
     row.className = 'step-resolved';
 
     const textWrap = document.createElement('div');
+    textWrap.className = 'text-wrap';
     const q = document.createElement('div');
     q.className = 'q';
     q.textContent = 'Контактные данные';
