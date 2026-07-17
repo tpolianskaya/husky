@@ -116,6 +116,7 @@
     white-space: nowrap;
   }
   .step-resolved .price.positive { color: var(--text); }
+  .price.pending { color: #b45309; }
   .step-resolved .edit-btn {
     flex-shrink: 0;
     width: 34px;
@@ -362,35 +363,40 @@
       question: 'Ранее на этом месте стояла стиральная машина?',
       options: [
         { value: 'yes', label: 'Да' },
-        { value: 'no', label: 'Нет' }
+        { value: 'no', label: 'Нет' },
+        { value: 'unknown', label: 'Не знаю' }
       ]
     },
     demontage: {
       question: 'Демонтаж старой машины потребуется?',
       options: [
         { value: 'yes', label: 'Да', hint: '+1000 ₽' },
-        { value: 'no', label: 'Нет' }
+        { value: 'no', label: 'Нет' },
+        { value: 'unknown', label: 'Не знаю', hint: 'уточним на месте' }
       ]
     },
     communications: {
       question: 'Коммуникации по заливу и сливу воды готовы?',
       options: [
         { value: 'yes', label: 'Да' },
-        { value: 'no', label: 'Нет', hint: '+2000 ₽' }
+        { value: 'no', label: 'Нет', hint: '+2000 ₽' },
+        { value: 'unknown', label: 'Не знаю', hint: 'уточним на месте' }
       ]
     },
     socket: {
       question: 'Розетка выведена в нужном месте?',
       options: [
         { value: 'yes', label: 'Да' },
-        { value: 'no', label: 'Нет', hint: '+1000 ₽' }
+        { value: 'no', label: 'Нет', hint: '+1000 ₽' },
+        { value: 'unknown', label: 'Не знаю', hint: 'уточним на месте' }
       ]
     },
     facade: {
       question: 'Навес фасада потребуется?',
       options: [
         { value: 'yes', label: 'Да' },
-        { value: 'no', label: 'Нет' }
+        { value: 'no', label: 'Нет' },
+        { value: 'unknown', label: 'Не знаю' }
       ]
     }
   };
@@ -413,7 +419,7 @@
 
   function getSequence() {
     const seq = ['stoodBefore'];
-    if (answers.stoodBefore === 'yes') seq.push('demontage');
+    if (answers.stoodBefore === 'yes' || answers.stoodBefore === 'unknown') seq.push('demontage');
     seq.push('communications');
     seq.push('socket');
     if (answers.type === 'builtin') seq.push('facade');
@@ -431,20 +437,30 @@
       total += 8000;
       breakdown.push({ name: 'Установка встраиваемой стиральной машины', price: 8000 });
     }
+
     if (answers.demontage === 'yes') {
       total += 1000;
       breakdown.push({ name: 'Демонтаж старой техники', price: 1000 });
+    } else if (answers.demontage === 'unknown') {
+      breakdown.push({ name: 'Демонтаж старой техники', pending: true });
     }
+
     if (answers.communications === 'no') {
       total += 1000;
       breakdown.push({ name: 'Доработка залива воды', price: 1000 });
       total += 1000;
       breakdown.push({ name: 'Доработка слива воды', price: 1000 });
+    } else if (answers.communications === 'unknown') {
+      breakdown.push({ name: 'Доработка коммуникаций (при необходимости)', pending: true });
     }
+
     if (answers.socket === 'no') {
       total += 1000;
       breakdown.push({ name: 'Установка розетки', price: 1000 });
+    } else if (answers.socket === 'unknown') {
+      breakdown.push({ name: 'Установка розетки (при необходимости)', pending: true });
     }
+
     if (answers.facade === 'yes') {
       breakdown.push({ name: 'Навес фасада', price: 0, included: true });
     }
@@ -459,9 +475,9 @@
   function priceForStep(stepId, value) {
     switch (stepId) {
       case 'type': return value === 'freestanding' ? 5000 : 8000;
-      case 'demontage': return value === 'yes' ? 1000 : 0;
-      case 'communications': return value === 'no' ? 2000 : 0;
-      case 'socket': return value === 'no' ? 1000 : 0;
+      case 'demontage': return value === 'yes' ? 1000 : (value === 'unknown' ? null : 0);
+      case 'communications': return value === 'no' ? 2000 : (value === 'unknown' ? null : 0);
+      case 'socket': return value === 'no' ? 1000 : (value === 'unknown' ? null : 0);
       default: return 0; // stoodBefore, facade — не влияют на цену
     }
   }
@@ -504,10 +520,15 @@
 
     const price = priceForStep(stepId, answers[stepId]);
     const priceEl = document.createElement('div');
-    priceEl.className = 'price' + (price > 0 ? ' positive' : '');
-    priceEl.textContent = price > 0
-      ? (stepId === 'type' ? `${price.toLocaleString('ru-RU')} ₽` : `+${price.toLocaleString('ru-RU')} ₽`)
-      : '0 ₽';
+    if (price === null) {
+      priceEl.className = 'price pending';
+      priceEl.textContent = 'уточним на месте';
+    } else {
+      priceEl.className = 'price' + (price > 0 ? ' positive' : '');
+      priceEl.textContent = price > 0
+        ? (stepId === 'type' ? `${price.toLocaleString('ru-RU')} ₽` : `+${price.toLocaleString('ru-RU')} ₽`)
+        : '0 ₽';
+    }
 
     row.appendChild(textWrap);
     row.appendChild(priceEl);
@@ -565,8 +586,13 @@
       name.className = 'name';
       name.textContent = item.name;
       const price = document.createElement('span');
-      price.className = 'price' + (item.included ? ' included' : '');
-      price.textContent = item.included ? 'включено' : `${item.price.toLocaleString('ru-RU')} ₽`;
+      if (item.pending) {
+        price.className = 'price pending';
+        price.textContent = 'уточним на месте';
+      } else {
+        price.className = 'price' + (item.included ? ' included' : '');
+        price.textContent = item.included ? 'включено' : `${item.price.toLocaleString('ru-RU')} ₽`;
+      }
       row.appendChild(name);
       row.appendChild(price);
       card.appendChild(row);
