@@ -177,6 +177,37 @@
     background: var(--accent-dim);
   }
 
+  /* Service category grid */
+  .service-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .service-tile {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: var(--input-bg);
+    border: 1.5px solid transparent;
+    border-radius: 16px;
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.3;
+    padding: 14px;
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+  }
+  .service-tile:hover { border-color: var(--accent); }
+  .service-tile:active { background: var(--accent-dim); }
+  .service-tile.disabled {
+    color: var(--text-placeholder);
+    cursor: default;
+  }
+  .service-tile.disabled:hover { border-color: transparent; }
+
   /* Contact form */
   .text-field {
     width: 100%;
@@ -322,7 +353,7 @@
   </div>
 
   <div class="title-row">
-    <h1>Установка стиральной машины</h1>
+    <h1 id="page-title">Установка бытовой техники</h1>
     <div class="icon-badge">
       <svg viewBox="0 0 24 24" width="22" height="22" fill="none">
         <rect x="3" y="2" width="18" height="20" rx="3" fill="#ffffff" fill-opacity="0.95"/>
@@ -333,13 +364,13 @@
       </svg>
     </div>
   </div>
-  <p class="progress-label" id="progress-label">Ответьте на несколько вопросов, чтобы рассчитать стоимость</p>
+  <p class="progress-label" id="progress-label">Выберите услугу</p>
 
   <div class="steps" id="steps"></div>
 
 </div>
 
-<div class="bottom-bar">
+<div class="bottom-bar" id="bottom-bar">
   <div class="bottom-bar-inner">
     <div class="total-block">
       <div class="total-label">Сумма итого</div>
@@ -410,13 +441,23 @@
     address: 'Москва, Ленинский пр-т 34, кв. 16'
   };
   const contactErrors = { fio: false, phone: false, address: false, type: false };
+  let serviceSelected = false;
   let contactSubmitted = false;
   let orderPlaced = false;
 
   const stepsEl = document.getElementById('steps');
   const totalValueEl = document.getElementById('total-value');
   const progressLabelEl = document.getElementById('progress-label');
+  const pageTitleEl = document.getElementById('page-title');
+  const bottomBarEl = document.getElementById('bottom-bar');
   const ctaBtn = document.getElementById('cta-btn');
+
+  const SERVICES = [
+    { key: 'washing_machine', label: 'Установка стиральной машины', enabled: true },
+    { key: 'dishwasher', label: 'Установка посудомоечной машины', enabled: false },
+    { key: 'fridge', label: 'Холодильник', enabled: false },
+    { key: 'hood', label: 'Вытяжка', enabled: false }
+  ];
 
   const editIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`;
   const checkIcon = `<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#34c759" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>`;
@@ -607,6 +648,36 @@
     return card;
   }
 
+  function renderServiceCard() {
+    const card = document.createElement('div');
+    card.className = 'step-active';
+
+    const q = document.createElement('div');
+    q.className = 'q';
+    q.textContent = 'Какая услуга нужна?';
+    card.appendChild(q);
+
+    const grid = document.createElement('div');
+    grid.className = 'service-grid';
+    SERVICES.forEach((s) => {
+      const tile = document.createElement('button');
+      tile.className = 'service-tile' + (s.enabled ? '' : ' disabled');
+      tile.textContent = s.label;
+      if (s.enabled) {
+        tile.addEventListener('click', () => {
+          serviceSelected = true;
+          render();
+        });
+      } else {
+        tile.disabled = true;
+      }
+      grid.appendChild(tile);
+    });
+    card.appendChild(grid);
+
+    return card;
+  }
+
   function renderContactCard() {
     const card = document.createElement('div');
     card.className = 'step-active';
@@ -731,6 +802,17 @@
 
   function render() {
     stepsEl.innerHTML = '';
+
+    if (!serviceSelected) {
+      pageTitleEl.textContent = 'Установка бытовой техники';
+      progressLabelEl.textContent = 'Выберите услугу';
+      bottomBarEl.style.display = 'none';
+      stepsEl.appendChild(renderServiceCard());
+      return;
+    }
+
+    pageTitleEl.textContent = 'Установка стиральной машины';
+    bottomBarEl.style.display = '';
 
     const { total } = computeTotal();
     totalValueEl.textContent = `${total.toLocaleString('ru-RU')} ₽`;
