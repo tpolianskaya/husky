@@ -146,11 +146,40 @@
     font-size:12.5px;color:var(--text-faint);display:flex;align-items:center;gap:6px;
   }
 
-  .final-note{
-    margin-top:22px;padding:14px 16px;border:1px dashed var(--border);border-radius:10px;
-    font-size:12.5px;color:var(--text-muted);line-height:1.5;
+  .toggle-box{
+    margin-top:22px;border:1px solid var(--accent);border-radius:10px;overflow:hidden;
+    background:var(--surface);
   }
-  .final-note b{color:var(--text);}
+  .toggle-head{
+    display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--accent-soft);
+  }
+  .toggle-head svg{width:22px;height:22px;flex:none;color:var(--accent);}
+  .toggle-head-text{flex:1;min-width:0;}
+  .toggle-label{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--accent-ink);}
+  .toggle-name{font-size:14.5px;font-weight:700;color:var(--text);margin-top:1px;}
+  .toggle-status{
+    flex:none;font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;
+    background:var(--accent);color:var(--surface);white-space:nowrap;
+  }
+  .toggle-body{padding:14px 16px;font-size:12.5px;color:var(--text-muted);line-height:1.55;}
+  .toggle-body b{color:var(--text);}
+  .toggle-row{margin-top:10px;}
+  .toggle-row:first-child{margin-top:0;}
+  .toggle-row .k{font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-faint);margin-bottom:4px;}
+  .toggle-fields{display:flex;flex-wrap:wrap;gap:6px;}
+  .toggle-fields code{
+    font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;font-size:11px;
+    background:var(--surface-2);border:1px solid var(--border);border-radius:5px;padding:2px 7px;color:var(--text);
+  }
+  .toggle-ids{
+    display:flex;flex-wrap:wrap;gap:5px;font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+    font-size:10.5px;color:var(--text-faint);
+  }
+  .toggle-ids span{background:var(--surface-2);border:1px solid var(--border-soft);border-radius:4px;padding:1px 6px;}
+  .toggle-caveat{
+    margin-top:12px;padding-top:10px;border-top:1px dashed var(--border);font-size:11.5px;
+    color:var(--text-faint);font-style:italic;
+  }
 
   .legend{
     margin-top:26px;display:flex;flex-wrap:wrap;gap:14px 22px;font-size:12px;color:var(--text-muted);
@@ -179,7 +208,7 @@
   <div class="flow-label"><span>Общие вопросы для любой ветки</span><span class="line"></span></div>
   <div id="tail-screens"></div>
 
-  <div class="final-note" id="final-note"></div>
+  <div class="toggle-box" id="toggle-box"></div>
 
   <div class="legend">
     <div class="legend-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>один вариант ответа</div>
@@ -326,11 +355,31 @@ function renderTail(isZasor) {
   container.innerHTML = screens.map(renderCard).join('');
 }
 
+const SAFE_DEAL_CITY_IDS = [637640,637770,637950,638130,638150,638520,638570,638920,639180,639280,639300,639740,639910,650400,653240];
+
 function renderFinal() {
-  document.getElementById('final-note').innerHTML =
-    `<b>Экран отправки (39-й / 38-й).</b> После геолокации форма показывает один из двух финальных экранов в зависимости от города объекта:
-    один — обычная отправка заявки исполнителям, второй — с баннером про сейф-сделку (для 15 городов из списка гарантии).
-    Оба ведут к одному результату — заявка уходит нескольким исполнителям.`;
+  document.getElementById('toggle-box').innerHTML = `
+    <div class="toggle-head">
+      <svg viewBox="0 0 24 24" fill="none"><rect x="2" y="7" width="20" height="10" rx="5" stroke="currentColor" stroke-width="2"/><circle cx="16" cy="12" r="3.4" fill="currentColor"/></svg>
+      <div class="toggle-head-text">
+        <div class="toggle-label">Тогл</div>
+        <div class="toggle-name">Заявка под ключ (сейф-сделка)</div>
+      </div>
+      <span class="toggle-status">включён для части городов</span>
+    </div>
+    <div class="toggle-body">
+      Экран 39 <b>SummaryGuaranteeBanner</b> с баннером «Заказать услугу под ключ с гарантией» показывается вместо обычного экрана 38 <b>Summary</b>,
+      если город объекта (поле <code class="mono">locationID</code> с экрана «Где находится объект») входит в список ниже.
+      <div class="toggle-row">
+        <div class="k">Поля в json</div>
+        <div class="toggle-fields"><code>isSafeDeal</code><code>SummaryGuaranteeBanner</code><code>locationID</code></div>
+      </div>
+      <div class="toggle-row">
+        <div class="k">Города тогла (${SAFE_DEAL_CITY_IDS.length} шт., по ID)</div>
+        <div class="toggle-ids">${SAFE_DEAL_CITY_IDS.map(id => `<span>${id}</span>`).join('')}</div>
+      </div>
+      <div class="toggle-caveat">Названия городов не удалось сопоставить с ID — в самом json справочника нет. Если нужно, можно расшифровать отдельно через справочник локаций Авито.</div>
+    </div>`;
 }
 
 renderBranches();
